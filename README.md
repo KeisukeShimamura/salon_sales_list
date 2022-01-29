@@ -28,8 +28,9 @@ conda install beautifulsoup4
 * scrapy作成
 ```
 scrapy startproject scraping
+cd scraping
+scrapy genspider hot_papper_beauty beauty.hotpepper.jp
 ```
-
 
 ### 突合
 ### データ分析
