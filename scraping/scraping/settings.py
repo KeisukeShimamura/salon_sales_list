@@ -86,3 +86,20 @@ DOWNLOAD_DELAY = 3
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+FEED_EXPORT_FIELDS = [
+    "サロン名",
+    "電話番号",
+    "住所",
+    "緯度",
+    "経度",
+    "営業時間",
+    "定休日",
+    "サロンホームページ",
+    "カット価格",
+    "席数",
+    "スタッフ数",
+    "ホットペッパーページ",
+    "ホットペッパー求人ページ",
+    "ホットペッパー掲載確認日",
+]

@@ -21,3 +21,4 @@ class SalonItem(scrapy.Item):
     スタッフ数 = scrapy.Field()
     ホットペッパーページ = scrapy.Field()
     ホットペッパー求人ページ = scrapy.Field()
+    ホットペッパー掲載確認日 = scrapy.Field()

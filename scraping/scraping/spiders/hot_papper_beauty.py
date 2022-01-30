@@ -1,6 +1,8 @@
 import scrapy
 from bs4 import BeautifulSoup
 from scraping.items import SalonItem
+import json
+import datetime
 
 class HotPapperBeautySpider(scrapy.Spider):
     name = 'hot_papper_beauty'
@@ -19,8 +21,8 @@ class HotPapperBeautySpider(scrapy.Spider):
             yield scrapy.Request(link.get('href'), self.parse_salon_page)
 
         # 次ページへ移動
-        #next_link = soup.find("li", class_="afterPage").findNext('a')
-        #yield scrapy.Request(next_link.get('href'), callback=self.parse)
+        next_link = soup.find("li", class_="afterPage").findNext('a')
+        yield scrapy.Request(next_link.get('href'), callback=self.parse)
 
     def parse_salon_page(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -28,11 +30,8 @@ class HotPapperBeautySpider(scrapy.Spider):
         item = SalonItem()
         item['サロン名'] = soup.h1.get_text()
         item['ホットペッパーページ'] = response.url
-        tel_link = None
         for th in soup.find('table', class_='slnDataTbl').find_all('th'):
-            if th.get_text() == '電話番号':
-                tel_link = th.next_element.findNext('td').findNext('a')
-            elif th.get_text() == '住所':
+            if th.get_text() == '住所':
                 item["住所"] = th.next_element.findNext('td').get_text().strip()
             elif th.get_text() == '営業時間':
                 item["営業時間"] = th.next_element.findNext('td').get_text().strip()
@@ -49,17 +48,15 @@ class HotPapperBeautySpider(scrapy.Spider):
             elif th.get_text() == 'スタッフ募集':
                 item["ホットペッパー求人ページ"] = th.next_element.findNext('td').findNext('a').get('href')
 
-        if tel_link is not None:
-            # 電話番号ページへ
-            request = scrapy.Request(tel_link.get('href'), self.parse_tel_page)
-            request.meta['item'] = item
-            yield request
-        else:
-            yield item
+        for script in soup.find_all('script', attrs={'type': 'application/ld+json'}):
+            data = json.loads(script.get_text())
+            if ('@type' not in data):
+                continue
+            if (data['@type'] != 'BeautySalon'):
+                continue
+            if ('telephone' in data):
+                item['電話番号'] = data['telephone']
 
-    def parse_tel_page(self, response):
-        soup = BeautifulSoup(response.text, 'html.parser')
-
-        item = response.meta['item']
-        item["電話番号"] = soup.find("td").get_text()
+        item['ホットペッパー掲載確認日'] = datetime.date.today()
+    
         yield item
