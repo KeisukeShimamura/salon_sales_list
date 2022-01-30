@@ -21,5 +21,5 @@
 * 実行コマンド
 
 ```
-scrapy crawl hot_papper_beauty -o data.csv
+scrapy crawl hot_papper_beauty -o hot_papper_beauty.csv
 ```
